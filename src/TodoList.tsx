@@ -38,12 +38,12 @@ export default class TodoList extends React.Component<TodoListProps, TodoListSta
     this.updateTitle = this.store.updateTitle.bind(this.store)
     this.clearCompleted = this.store.clearCompleted.bind(this.store)
 
-    this.state = { todos: [], newTodo: '', filter: 'all' }
-    this.store.onChange(store => this.setState({ todos: store.todos }))
+    this.state = { todos: this.store.items, newTodo: '', filter: 'all' }
+    this.store.onChange(store => this.setState({ todos: store.items }))
   }
 
   get remainingCount (): number {
-    return this.store.todos.reduce((count, todos) => !todos.completed ? count + 1 : count, 0)
+    return this.store.items.reduce((count, todos) => !todos.completed ? count + 1 : count, 0)
   }
 
   render () {

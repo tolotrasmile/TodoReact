@@ -4,22 +4,16 @@ declare type ChangeCallback = (store: TodoStore) => void
 
 export default class TodoStore {
 
-  private static i = 0
-  public todos: Todo[] = TodoStore.store('todos', [])
+  private static key: string = 'todos'
+  public items: Todo[] = TodoStore.fetch()
   private callbacks: ChangeCallback[] = []
 
-  private static increment () {
-    return this.i++
+  private static store (data: Todo[]) {
+    localStorage.setItem(TodoStore.key, JSON.stringify(data))
   }
 
-  private static store (namespace: string, data: Todo[]) {
-
-    if (data.length > 0) {
-      localStorage.setItem(namespace, JSON.stringify(data))
-    }
-
-    let store = localStorage.getItem(namespace)
-    console.log(store)
+  private static fetch () {
+    let store = localStorage.getItem(TodoStore.key)
     return (store && JSON.parse(store)) || []
   }
 
@@ -42,7 +36,7 @@ export default class TodoStore {
    * Call all callbacks
    */
   inform () {
-    this.todos = TodoStore.store('todos', this.todos)
+    TodoStore.store(this.items)
     this.callbacks.forEach(cb => cb(this))
   }
 
@@ -59,7 +53,7 @@ export default class TodoStore {
    * @param {string} title
    */
   addTodo (title: string): void {
-    this.todos = [{ id: TodoStore.uuid(), title: title, completed: false }, ...this.todos]
+    this.items = [{ id: TodoStore.uuid(), title: title, completed: false }, ...this.items]
     this.inform()
   }
 
@@ -68,7 +62,7 @@ export default class TodoStore {
    * @param {Todo} todo
    */
   removeTodo (todo: Todo): void {
-    this.todos = this.todos.filter(t => t !== todo)
+    this.items = this.items.filter(t => t !== todo)
     this.inform()
   }
 
@@ -77,7 +71,7 @@ export default class TodoStore {
    * @param {Todo} todo
    */
   toggleTodo (todo: Todo): void {
-    this.todos = this.todos.map(t => t === todo ? { ...t, completed: !t.completed } : t)
+    this.items = this.items.map(t => t === todo ? { ...t, completed: !t.completed } : t)
     this.inform()
   }
 
@@ -86,7 +80,7 @@ export default class TodoStore {
    * @param {boolean} completed
    */
   toggleAll (completed = true): void {
-    this.todos = this.todos.map(t => completed === !t.completed ? { ...t, completed } : t)
+    this.items = this.items.map(t => completed === !t.completed ? { ...t, completed } : t)
     this.inform()
   }
 
@@ -96,7 +90,7 @@ export default class TodoStore {
    * @param {string} title
    */
   updateTitle (todo: Todo, title: string): void {
-    this.todos = this.todos.map(t => t === todo ? { ...t, title } : t)
+    this.items = this.items.map(t => t === todo ? { ...t, title } : t)
     this.inform()
   }
 
@@ -104,7 +98,7 @@ export default class TodoStore {
    * Remove completed items
    */
   clearCompleted (): void {
-    this.todos = this.todos.filter(t => !t.completed)
+    this.items = this.items.filter(t => !t.completed)
     this.inform()
   }
 }
