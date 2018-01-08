@@ -19,7 +19,6 @@ export default class TodoItem extends React.PureComponent<Props, State> {
   constructor (props: Props) {
 
     super(props)
-
     this.state = { editing: false, title: '' }
 
   }

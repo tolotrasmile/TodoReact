@@ -18,6 +18,7 @@ export default class TodoStore {
   }
 
   private static uuid (): string {
+
     let random = 0
     let uuid = ''
 
